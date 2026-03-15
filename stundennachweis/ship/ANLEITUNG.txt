@@ -1,0 +1,110 @@
+========================================================
+  STUNDENNACHWEIS GENERATOR - Anleitung
+========================================================
+
+Was macht dieses Programm?
+---------------------------
+Du bekommst jeden Monat eine Excel-Datei (current_data.xlsx) mit
+allen MitarbeiterInnen, ihren Projekten und Bestellnummern.
+
+Dieses Programm nimmt diese Datei und erstellt automatisch fuer
+jede Zeile ein fertiges Stundennachweis-Excel, in das die
+MitarbeiterInnen nur noch ihre Stunden und Taetigkeiten eintragen
+muessen.
+
+
+Was liegt in diesem Ordner?
+---------------------------
+  Stundennachweis_Generator.exe   <-- Das Programm (Doppelklick zum Starten)
+  empty_template.xlsx             <-- Die Vorlage (NICHT loeschen oder verschieben!)
+  ANLEITUNG.txt                   <-- Diese Datei
+
+
+Schritt-fuer-Schritt Anleitung
+-------------------------------
+
+1) PROGRAMM STARTEN
+   Doppelklick auf "Stundennachweis_Generator.exe".
+   Es oeffnet sich ein Fenster mit mehreren Bereichen.
+
+   HINWEIS: Beim ersten Start kann Windows eine Warnung anzeigen
+   ("Windows protected your PC" / "Der Computer wurde geschuetzt").
+   Klicke auf "Weitere Informationen" / "More info" und dann auf
+   "Trotzdem ausfuehren" / "Run anyway". Das ist normal und muss
+   nur einmal gemacht werden.
+
+2) DATEIEN AUSWAEHLEN
+   - "current_data.xlsx": Klicke auf "Browse" und waehle die
+     aktuelle Monatsdatei aus.
+   - "Output folder": Klicke auf "Browse" und waehle einen Ordner
+     aus, in dem die fertigen Dateien gespeichert werden sollen
+     (z.B. einen neuen Ordner auf dem Desktop).
+   - "empty_template.xlsx": Ist normalerweise schon ausgefuellt.
+     Nur aendern, wenn die Vorlage woanders liegt.
+
+3) DATEN LADEN
+   Klicke auf "Load Data". Unten im Fenster erscheint eine
+   Bestaetigung wie viele Zeilen und Projekte geladen wurden.
+   Im Bereich "Auftragsabwicklung mit" erscheinen jetzt alle
+   Projekte mit einem Eingabefeld daneben.
+
+4) MONAT UND JAHR EINSTELLEN
+   Waehle das richtige Jahr und den richtigen Monat aus.
+   Die Kalender-Ansicht darunter aktualisiert sich automatisch.
+
+5) FEIERTAGE MARKIEREN
+   Im Bereich "National Holidays" siehst du alle Tage des Monats
+   mit dem Wochentag daneben (Mo, Di, Mi, ...).
+   Setze ein Haekchen bei jedem FEIERTAG in diesem Monat.
+   Samstage und Sonntage sind bereits ausgegraut - die musst du
+   nicht markieren.
+
+   Beispiel fuer Maerz: Wenn der 19. ein Feiertag ist, setze
+   das Haekchen bei "19. Do".
+
+6) KONTAKTPERSONEN EINTRAGEN
+   Im Bereich "Auftragsabwicklung mit" steht fuer jedes Projekt
+   ein Eingabefeld. Trage dort den Namen der jeweiligen
+   Kontaktperson ein.
+
+7) GENERIEREN
+   Klicke auf "Generate". Der Fortschrittsbalken zeigt den
+   Fortschritt an. Wenn alles fertig ist, erscheint eine
+   Bestaetigung mit der Anzahl der erstellten Dateien.
+
+8) FERTIG!
+   Im ausgewaehlten Output-Ordner liegen jetzt alle
+   Stundennachweis-Dateien. Jede Datei ist nach diesem Schema
+   benannt:
+
+     vorname.nachname_bestellnummer_jahr_monat.xlsx
+
+   Die MitarbeiterInnen muessen nur noch die Spalten
+   "Stunden" und "Taetigkeit (Kurztext)" ausfuellen.
+
+
+Haeufige Probleme
+------------------
+
+  "Es passiert nichts beim Doppelklick"
+  -> Rechtsklick auf die .exe -> "Als Administrator ausfuehren"
+
+  "Fehlermeldung beim Laden der Datei"
+  -> Stelle sicher, dass die current_data.xlsx nicht gerade in
+     Excel geoeffnet ist. Schliesse sie zuerst in Excel.
+
+  "Die Vorlage wird nicht gefunden"
+  -> Die Datei "empty_template.xlsx" muss im SELBEN Ordner wie
+     die .exe liegen. Nicht verschieben oder umbenennen!
+
+  "Es fehlen Dateien im Output"
+  -> Pruefe ob die current_data.xlsx alle Zeilen enthaelt.
+     Jede Zeile in der Datei = eine Ausgabedatei.
+
+
+WICHTIG
+--------
+  - Die Datei "empty_template.xlsx" NICHT loeschen, umbenennen
+    oder verschieben. Sie muss immer neben der .exe liegen.
+  - Die current_data.xlsx vor dem Laden in Excel SCHLIESSEN.
+  - Fuer jeden neuen Monat einfach das Programm erneut starten.

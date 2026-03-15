@@ -1,0 +1,36 @@
+name: Build Stundennachweis .exe
+
+on:
+  workflow_dispatch:  # Manual trigger from GitHub UI
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install openpyxl pyinstaller
+
+      - name: Build .exe
+        working-directory: stundennachweis/scripts
+        run: |
+          pyinstaller --onefile --windowed --name Stundennachweis_Generator gui.py
+
+      - name: Copy template alongside .exe
+        run: |
+          copy stundennachweis\ship\empty_template.xlsx stundennachweis\scripts\dist\
+          copy stundennachweis\ship\ANLEITUNG.txt stundennachweis\scripts\dist\
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Stundennachweis_Generator
+          path: stundennachweis/scripts/dist/

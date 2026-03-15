@@ -1,0 +1,25 @@
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+dist/
+build/
+*.spec
+
+# Excel temp files
+~$*.xlsx
+~$*.xls
+
+# Data files (keep structure, ignore actual data)
+**/data/input/*
+**/data/output/*
+!**/data/input/.gitkeep
+!**/data/input/empty_template.xlsx
+!**/data/output/.gitkeep
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
