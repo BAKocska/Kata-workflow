@@ -8,6 +8,7 @@ without touching a terminal.
 
 import os
 import sys
+import math
 import calendar
 import threading
 import queue
@@ -28,6 +29,83 @@ from generate_templates import (
 )
 
 GERMAN_DAYS_SHORT = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
+
+# ---------------------------------------------------------------------------
+# Spinning pixelated dachshund
+# ---------------------------------------------------------------------------
+
+# Pixel art dachshund (facing left) — B=black, D=dark gray, T=tan, E=eye
+_DACHSHUND_COLORS = {
+    'B': '#000000',
+    'D': '#2e3238',
+    'T': '#c8946c',
+    'E': '#2a1a0a',
+}
+
+_DACHSHUND = [
+    '.........BBB..........................',
+    '........BDDDBB........................',
+    '.......BDDDDBBB.......................',
+    '....BBBDBDDBDDBB......................',
+    '....BDDDDDDTBDDBB.....................',
+    '....BTTTTTDDBDDBB.....................',
+    '.....BBBTTTBBBBBBBBBBBBBBBBBBBBB.BB...',
+    '........BBBTBBBBDDDDDDDDDDDDDDDDB..B.',
+    '...........BDBBDDDDDDDDDDDDDDDDDBB..B',
+    '...........BTDDDDDDDDDDDDDDDDDDDDBB.B',
+    '............BTDDDDDDDDDDDDDDBDDDDBB.B',
+    '............BTDDDDDDDDDDDDDDBDDDDBB.B',
+    '............BTDDDDDBDDDDDDTTBTDDDBB..B',
+    '.............BTBDDDBBBBTTTTB.BTDBB....',
+    '..............BBBTB.BBBBBBB...BTBB....',
+    '................BTB............BTB....',
+    '...............BTB............BTB.....',
+    '...............BB.............BB......',
+]
+
+
+class SpinningDachshund:
+    """A pixelated dachshund spinning around a vertical axis."""
+
+    PX = 3
+
+    def __init__(self, canvas):
+        self.canvas = canvas
+        self.angle = 0.0
+        self.rects = []
+        self.pixels = []
+        for r, row in enumerate(_DACHSHUND):
+            for c, ch in enumerate(row):
+                if ch in _DACHSHUND_COLORS:
+                    self.pixels.append((c, r, _DACHSHUND_COLORS[ch]))
+        xs = [p[0] for p in self.pixels]
+        self.cx = (min(xs) + max(xs)) / 2
+        self._animate()
+
+    def _animate(self):
+        px = self.PX
+        scale = math.cos(self.angle)
+        for r in self.rects:
+            self.canvas.delete(r)
+        self.rects.clear()
+        for x, y, color in self.pixels:
+            proj_x = self.cx + (x - self.cx) * scale
+            x1 = proj_x * px
+            y1 = y * px
+            w = px * abs(scale)
+            if w < 0.5:
+                continue
+            if scale >= 0:
+                r = self.canvas.create_rectangle(
+                    x1, y1, x1 + w, y1 + px, fill=color, outline='')
+            else:
+                r = self.canvas.create_rectangle(
+                    x1 - w, y1, x1, y1 + px, fill=color, outline='')
+            self.rects.append(r)
+        self.angle += 0.04
+        if self.angle >= 2 * math.pi:
+            self.angle -= 2 * math.pi
+        self.canvas.after(40, self._animate)
 
 
 def _default_template_path():
@@ -72,6 +150,14 @@ class App:
         self.var_month = tk.IntVar(value=date.today().month)
 
         pad = dict(padx=8, pady=4)
+
+        # --- Spinning dachshund ---
+        art_w = (max(len(row) for row in _DACHSHUND)) * 4
+        art_h = len(_DACHSHUND) * 4
+        dachshund_canvas = tk.Canvas(root, width=art_w, height=art_h,
+                                     highlightthickness=0)
+        dachshund_canvas.pack(pady=(8, 0))
+        SpinningDachshund(dachshund_canvas)
 
         # --- Section: Files ---
         frm_files = ttk.LabelFrame(root, text='Files')
@@ -319,6 +405,9 @@ class App:
             total = len(p['assignments'])
             seen = {}
             for i, a in enumerate(p['assignments'], 1):
+                safe_proj = a['project_name'].replace('/', '_').replace('\\', '_')
+                proj_dir = os.path.join(p['output_dir'], safe_proj)
+                os.makedirs(proj_dir, exist_ok=True)
                 safe = a['resource'].replace('/', '_').replace('\\', '_')
                 base = f"{safe}_{a['purchase_order']}_{p['year']}_{p['month']:02d}"
                 seen[base] = seen.get(base, 0) + 1
@@ -328,8 +417,8 @@ class App:
                 generate_file(
                     template_bytes, a, p['year'], p['month'],
                     p['weekdays'], contact,
-                    os.path.join(p['output_dir'], fn))
-                self.progress_queue.put(('progress', i, total, fn))
+                    os.path.join(proj_dir, fn))
+                self.progress_queue.put(('progress', i, total, f'{safe_proj}/{fn}'))
 
             self.progress_queue.put(('done', total, p['output_dir']))
         except Exception as exc:

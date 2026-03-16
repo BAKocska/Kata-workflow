@@ -3,6 +3,9 @@ name: Build Stundennachweis .exe
 on:
   workflow_dispatch:  # Manual trigger from GitHub UI
 
+permissions:
+  contents: write  # Needed to create releases
+
 jobs:
   build:
     runs-on: windows-latest
@@ -24,13 +27,17 @@ jobs:
         run: |
           pyinstaller --onefile --windowed --name Stundennachweis_Generator gui.py
 
-      - name: Copy template alongside .exe
+      - name: Package release zip
         run: |
-          copy stundennachweis\ship\empty_template.xlsx stundennachweis\scripts\dist\
-          copy stundennachweis\ship\ANLEITUNG.txt stundennachweis\scripts\dist\
+          mkdir release
+          copy stundennachweis\scripts\dist\Stundennachweis_Generator.exe release\
+          copy stundennachweis\ship\empty_template.xlsx release\
+          copy stundennachweis\ship\ANLEITUNG.txt release\
+          cd release && tar -acf ..\Stundennachweis_Generator.zip *
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Stundennachweis_Generator
-          path: stundennachweis/scripts/dist/
+      - name: Create or update release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete latest --yes 2>nul || echo "No existing release"
+          gh release create latest Stundennachweis_Generator.zip --title "Stundennachweis Generator" --notes "Download the zip, extract, and double-click Stundennachweis_Generator.exe"

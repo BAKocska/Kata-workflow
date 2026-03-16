@@ -346,14 +346,17 @@ def main():
     print(f"Generating in {out_dir}/ ...")
     seen = {}
     for i, a in enumerate(assignments, 1):
+        safe_proj = a['project_name'].replace('/', '_').replace('\\', '_')
+        proj_dir = os.path.join(out_dir, safe_proj)
+        os.makedirs(proj_dir, exist_ok=True)
         safe_name = a['resource'].replace('/', '_').replace('\\', '_')
         base = f"{safe_name}_{a['purchase_order']}_{year}_{month:02d}"
         seen[base] = seen.get(base, 0) + 1
         filename = f"{base}.xlsx" if seen[base] == 1 else f"{base}_{seen[base]}.xlsx"
         contact = contacts.get(a['project_name'], '')
         generate_file(template_bytes, a, year, month, weekdays, contact,
-                      os.path.join(out_dir, filename))
-        print(f"  [{i}/{len(assignments)}] {filename}")
+                      os.path.join(proj_dir, filename))
+        print(f"  [{i}/{len(assignments)}] {safe_proj}/{filename}")
 
     print(f"\nDone! {len(assignments)} files in {out_dir}/")
 
